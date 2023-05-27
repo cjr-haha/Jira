@@ -46,6 +46,12 @@
       "last 1 safari version"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-auto-gc": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "devDependencies": {
     "husky": "^8.0.3",
     "lint-staged": "^13.2.2",
