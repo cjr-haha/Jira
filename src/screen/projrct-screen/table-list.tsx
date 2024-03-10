@@ -1,29 +1,35 @@
-import React from "react";
+import React, { useCallback } from "react";
 import moment from "moment";
 import { Button, Dropdown, Rate, Table, Tooltip } from "antd";
 import { ColumnsType } from "antd/lib/table/interface";
 import { ItemType } from "antd/lib/menu/hooks/useItems";
 import { Project } from "../../type/project";
+import { useProjectModal } from "./hook";
+import { useCollectProjects, useDeleteAProject } from "../../http";
+import { useMinLayOutContext } from "../../layout/main-layout/main-layout-context";
 
 interface Props {
   isLoading: boolean;
   isFailed: boolean;
   data: Project[];
+  retry: () => void;
 }
 
-const TableList = ({ isLoading, isFailed, data }: Props) => {
-  // const dataSource:Project[] = [
-  //   {
-  //     "personId": 8,
-  //     "organization": "快递组",
-  //     "created": 1604989757139,
-  //     "ownerId": 117799703,
-  //     "name": "快递管理",
-  //     "id": 2,
-  //     "pin": true
-  //   }
-  // ];
+const TableList = ({ isLoading, isFailed, data, retry }: Props) => {
+  const { openEditModel } = useProjectModal();
 
+  const {
+    isSuccess: pinSuccess,
+    isFailed: pinFail,
+    run: pinRun,
+  } = useCollectProjects();
+  const { run: deleteProject } = useDeleteAProject();
+
+  const fetchPin = (pin: boolean, record: any) =>
+    pinRun({ id: record.id, pin }).then(retry);
+  const fetchDeleteProject = (id: number) => deleteProject(id).then(retry);
+
+  const { userData } = useMinLayOutContext();
   const columns: ColumnsType<Project> = [
     {
       title: (
@@ -35,7 +41,13 @@ const TableList = ({ isLoading, isFailed, data }: Props) => {
       key: "pin",
       align: "center",
       render: (_, record) => {
-        return <Rate value={_ ? 1 : 0} count={1} />;
+        return (
+          <Rate
+            value={_ ? 1 : 0}
+            count={1}
+            onChange={(id) => fetchPin(!!id, record)}
+          />
+        );
       },
     },
     {
@@ -59,7 +71,21 @@ const TableList = ({ isLoading, isFailed, data }: Props) => {
       key: "ownerId",
       align: "center",
       render: (_, record) => {
-        return <div>{_}</div>;
+        const user = (() => {
+          let user = "";
+          if (userData) {
+            const userData_c = [...userData];
+            while (userData_c.length > 0) {
+              if (userData_c[0].ownerId === _) {
+                user = userData_c[0].name;
+                break;
+              }
+              userData_c.shift();
+            }
+          }
+          return user;
+        })();
+        return <div>{user}</div>;
       },
     },
     {
@@ -76,14 +102,17 @@ const TableList = ({ isLoading, isFailed, data }: Props) => {
       key: "handle",
       align: "center",
       render: (_, record) => {
+        const { id } = record;
         const items: ItemType[] = [
           {
             key: "edit",
-            label: <span>编辑</span>,
+            label: <span onClick={() => openEditModel(id)}>编辑</span>,
           },
           {
             key: "delete",
-            label: <span>删除</span>,
+            label: (
+              <span onClick={() => fetchDeleteProject(record.id)}>删除</span>
+            ),
           },
         ];
         return (
@@ -95,6 +124,13 @@ const TableList = ({ isLoading, isFailed, data }: Props) => {
     },
   ];
 
-  return <Table dataSource={data} loading={isLoading} columns={columns} />;
+  return (
+    <Table
+      dataSource={data}
+      loading={isLoading}
+      columns={columns}
+      rowKey={(rocord) => rocord.id}
+    />
+  );
 };
 export default TableList;

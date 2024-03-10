@@ -1,8 +1,10 @@
 import { Col, Form, Input, Row, Select } from "antd";
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "@emotion/styled";
-import { Project } from "../../type/project";
-interface Props {
+import { Project, TeamUsers } from "../../type/project";
+import { IdSelect } from "../../components/id-selecte";
+import { useMinLayOutContext } from "../../layout/main-layout/main-layout-context";
+interface SearchList_Props {
   params: any;
   setUrlParams: (params: any) => void;
 }
@@ -12,7 +14,43 @@ const WrapperForm = styled(Form)`
     margin-bottom: 0px;
   }
 `;
-const SearchList = ({ params, setUrlParams }: Props) => {
+interface SelectHeader_Props {
+  list: TeamUsers[] | null;
+  defaultValue?: string;
+  onChange: (value: number) => any;
+  [propName: string]: any;
+}
+const SelectHeader = ({
+  list,
+  onChange,
+  value,
+  ...otherProps
+}: SelectHeader_Props) => {
+  const data = useMemo(() => {
+    if (!list) return null;
+    return list.map((item) => {
+      return {
+        ...item,
+        key: item.ownerId,
+        value: item.name,
+      };
+    });
+  }, [list]);
+
+  return (
+    <IdSelect
+      data={data}
+      defaultValue="负责人"
+      onChange={onChange}
+      value={value}
+      {...otherProps}
+    />
+  );
+};
+const SearchList = ({ params, setUrlParams }: SearchList_Props) => {
+  const { userData } = useMinLayOutContext();
+  const onChange = (value: number) => setUrlParams({ personId: value });
+
   return (
     <WrapperForm>
       <Row gutter={8}>
@@ -30,21 +68,12 @@ const SearchList = ({ params, setUrlParams }: Props) => {
         </Col>
         <Col span={2}>
           <Form.Item name={"personId"}>
-            <Select
+            <SelectHeader
               allowClear
               value={params.personId || ""}
-              onChange={(value) => {
-                setUrlParams({ personId: value });
-              }}
-            >
-              {["1", "2"]?.map((item) => {
-                return (
-                  <Select.Option value={item} key={item}>
-                    {item}
-                  </Select.Option>
-                );
-              })}
-            </Select>
+              onChange={onChange}
+              list={userData}
+            />
           </Form.Item>
         </Col>
       </Row>

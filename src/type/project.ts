@@ -7,3 +7,10 @@ export interface Project {
   id: number;
   pin: boolean;
 }
+
+export interface TeamUsers {
+  id: number | string;
+  name: string | string;
+  organization: string;
+  ownerId: number;
+}

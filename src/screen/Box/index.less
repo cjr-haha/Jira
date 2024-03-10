@@ -1,0 +1,56 @@
+// ============
+.MoreChoice {
+  // width: 100%;
+  // height: 100%;
+  height: 30px;
+  width: 300px;
+  border: solid #61c2ff 1px !important;
+  cursor: not-allowed;
+  border-radius: 2px;
+  padding: 5px;
+  position: relative;
+  .ListBox_Wrapper {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    margin: 0;
+
+    // right: 0;
+  }
+}
+.ListBox {
+  border: solid #61c2ff 1px !important;
+  border-radius: 2px;
+  transition: all 100ms;
+}
+.ItemBox {
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  cursor: pointer;
+  &:hover {
+    background-color: #f0fbff;
+  }
+  &.active {
+    font-weight: 600;
+    background-color: #fafafa;
+  }
+  & > * {
+    display: inline-block;
+  }
+  .openFlag_right {
+    margin-left: 18px;
+  }
+  & > .ItemBox_children {
+    // position: absolute;
+    // top: calc(100% + 5px);
+    // left: 0;
+    // margin: 0;
+    position: absolute;
+    // left: calc(100% + 5px);
+    margin-left: calc(100% + 5px);
+    top: 0;
+    min-width: 100px;
+  }
+}

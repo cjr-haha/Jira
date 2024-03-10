@@ -5,6 +5,7 @@ import Resgieter from "./register";
 import logo from "assets/logo.svg";
 import right from "assets/right.svg";
 import left from "assets/left.svg";
+import MoreChoice from "../screen/Box/MoreChoice";
 
 const Wrapper = styled.div`
   background-image: url(${left}), url(${right});
@@ -68,6 +69,7 @@ const Wrapper = styled.div`
 `;
 
 function UnAuthenticatedApp() {
+  return <MoreChoice />;
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 

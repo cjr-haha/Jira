@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import { Col, Dropdown, Row } from "antd";
 import SoftWareLogo from "./soft-logo";
+import { useFetchProjectLists, useProjectUsers } from "../../http";
+import useAsync from "../../http/useAsync";
+import { Project } from "../../type/project";
+import { useMinLayOutContext } from "./main-layout-context";
 
 const WrappedMainLayOut = styled.div`
   padding: 16px 32px;
@@ -43,6 +47,10 @@ const WrappedDropDown = styled.div`
 `;
 
 const Header = () => {
+  const { userData, userRun, listData, listRun } = useMinLayOutContext();
+  const pinDate = useMemo(() => listData?.filter((item) => item.pin), [
+    listData,
+  ]);
   const dropDown = {
     projectDropDown: [
       {
@@ -50,9 +58,9 @@ const Header = () => {
           <WrappedDropDown>
             <div className={"dropDown-header"}>收藏项目</div>
             <ul className={"dropDown-content-list"}>
-              {["快递管理1", "快递管理2", "快递管理3"].map((item) => {
-                return <li key={"item"}>{item}</li>;
-              })}
+              {pinDate?.map((item) => (
+                <li key={item.id}>{item.name}</li>
+              ))}
             </ul>
           </WrappedDropDown>
         ),
@@ -75,9 +83,9 @@ const Header = () => {
           <WrappedDropDown>
             <div className={"dropDown-header"}>组员列表</div>
             <ul className={"dropDown-content-list"}>
-              {["组员列表1", "组员列表2", "组员列表3"].map((item) => {
-                return <li key={"item"}>{item}</li>;
-              })}
+              {userData?.map((item, index) => (
+                <li key={item.id}>{item.name}</li>
+              ))}
             </ul>
           </WrappedDropDown>
         ),

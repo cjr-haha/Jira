@@ -57,12 +57,17 @@ const useAsync = <D>(initialSate?: DATA<D>) => {
   const run = useCallback(
     (
       promise: Promise<any>,
-      config: { isThrowError?: Boolean; retry?: Function } = {}
+      config: { isThrowError?: Boolean; retry?: () => Promise<any> } = {}
     ) => {
       if (!(promise instanceof Promise)) {
         throw new Error("请传入一个promise");
       }
-      config.retry && setRetry(() => config.retry);
+
+      setRetry(() => () => {
+        if (config.retry) {
+          run(config.retry(), config);
+        }
+      });
 
       setLoading();
 
@@ -85,6 +90,7 @@ const useAsync = <D>(initialSate?: DATA<D>) => {
     isFailed: data.status == Statu.FAIL,
     isIdle: data.status == Statu.IDLE,
     isLoading: data.status == Statu.LOADING,
+    retry,
     run,
     setSuccess,
     setError,

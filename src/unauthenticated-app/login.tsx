@@ -4,6 +4,7 @@ import useAsync from "../http/useAsync";
 import { fetchLogin } from "../http";
 import { UserAuth } from "../type/user";
 import { useAuth } from "../context/auth";
+import { useHistory } from "react-router";
 
 function Login({ setError }: { setError: Function }) {
   const { isLoading, run } = useAsync();

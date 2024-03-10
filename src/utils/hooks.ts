@@ -9,7 +9,7 @@ export const useMounted = (callback: Function) => {
 
 //一个防抖
 //使用 useDebounce(原有的参数) 返回一个节流参数 这个参数变化的时候去请求
-export const useDebounce = <T>(params: T, time: number) => {
+export const useDebounce = <T>(params: T, time: number = 200) => {
   const [debounceParams, setBebounceParams] = useState(params);
 
   useEffect(() => {
@@ -25,17 +25,17 @@ export const useUrl = <T extends string>(keys: T[]) => {
   const paramsObj = useUrlParams();
   const setUrlParams = useSetUrlParams();
   const [keysState] = useState(keys);
-
+  console.log("执行一次", keys);
   return [
     useMemo(
       () =>
         keysState.reduce((pre, current) => {
           return {
             ...pre,
-            [current]: paramsObj[current] || "",
+            [current]: paramsObj[current] || undefined,
           };
         }, {}) as {
-          [key in T]: string;
+          [key in T]: string | undefined;
         },
       [keysState, paramsObj]
     ),
